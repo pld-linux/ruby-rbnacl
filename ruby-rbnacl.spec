@@ -3,6 +3,7 @@
 %bcond_with	tests		# build without tests
 
 %define	pkgname	rbnacl
+%define	min_libsodium 0.4.3
 Summary:	Ruby binding to the Networking and Cryptography (NaCl) library
 Name:		ruby-%{pkgname}
 Version:	3.3.0
@@ -20,6 +21,7 @@ BuildRequires:	ruby-rspec < 3.1
 BuildRequires:	ruby-rspec >= 3.0.0
 BuildRequires:	ruby-rubocop
 %endif
+Requires:	libsodium >= %{min_libsodium}
 Requires:	ruby-ffi
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -32,6 +34,9 @@ toolkit for building cryptographic systems and protocols
 %setup -q -n %{pkgname}-%{version}
 
 %build
+v=$(awk -F'"' '/MINIMUM_LIBSODIUM_VERSION =/{print $2}' lib/rbnacl/sodium/version.rb)
+test "$v" = %{min_libsodium}
+
 # write .gemspec
 %__gem_helper spec
 
